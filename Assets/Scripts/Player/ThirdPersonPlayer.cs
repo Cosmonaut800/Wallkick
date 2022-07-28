@@ -11,6 +11,8 @@ public class ThirdPersonPlayer : MonoBehaviour
 	public float floorThreshold = 0.175f;
 	public float ceilingThreshold = 0.175f;
 
+	public float maxFriction = 1.0f;
+
 	private Rigidbody rb;
 	[HideInInspector] public Animator animator;
 	
