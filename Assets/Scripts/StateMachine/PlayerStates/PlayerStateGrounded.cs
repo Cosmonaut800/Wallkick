@@ -58,6 +58,8 @@ public class PlayerStateGrounded : State
 			//Mathf.Lerp(1.0f, 0.0f, 1 - Mathf.Pow(Mathf.Abs(Vector3.Dot(AverageFloors(controller.floors), Vector3.Normalize(Physics.gravity))), 0.333f))
 		}
 
+		ClampGround();
+
 		if (CheckJumpConditions())
 		{
 			PlayerStateAerial nextState = new PlayerStateAerial();
@@ -104,6 +106,23 @@ public class PlayerStateGrounded : State
 	{
 		rb.AddForce(controller.maxFriction * Mathf.Abs(Vector3.Dot(Physics.gravity, normal)) * -Vector3.Normalize(rb.velocity), ForceMode.Acceleration);
 		//          Friction coefficient   *           Force against surface normal     in the direction opposite of motion
+	}
+
+	private bool ClampGround()
+	{
+		bool result;
+		Vector3 displacement;
+
+		//result = rb.SweepTest(Vector3.down, out controller.hit, 1.0f);
+		result = Physics.SphereCast(controller.transform.position, 0.5f, Vector3.down, out controller.hit, 1.2f);
+		displacement = (controller.hit.distance - 0.5f) * Vector3.down;
+
+		if (result)
+		{
+			rb.MovePosition(controller.transform.position + displacement);
+		}
+
+		return result;
 	}
 
 	//----State Transitions----------------

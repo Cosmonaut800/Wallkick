@@ -18,6 +18,7 @@ public class ThirdPersonPlayer : MonoBehaviour
 	
 	[HideInInspector] public Vector3 movementVector;
 	[HideInInspector] public float usedSpeed;
+	[HideInInspector] public RaycastHit hit;
 
 	[HideInInspector] public float jumpAnticipate = -Utility.TIME_EPSILON;
 	[HideInInspector] public float jumpCooldown = 0.02f;
@@ -150,5 +151,8 @@ public class ThirdPersonPlayer : MonoBehaviour
 			Gizmos.color = Color.red;
 			Gizmos.DrawRay(walls[i].point, walls[i].normal);
 		}
+
+		Gizmos.color = Color.red;
+		Gizmos.DrawSphere(hit.point, 0.1f);
 	}
 }

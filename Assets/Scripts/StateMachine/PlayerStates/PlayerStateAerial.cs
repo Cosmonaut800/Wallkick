@@ -31,9 +31,11 @@ public class PlayerStateAerial : State
 		rb.AddForce(0.1f * controller.speed * forceDir);
 
 		controller.animator.SetFloat(
-			"Areal.Jump", 
-			Mathf.Min(Mathf.Max(((rb.velocity.y * -0.08f) * 0.5f + 1.0f), 0.0f), 1.0f)
+			"Areal.Jump",
+			Mathf.Clamp01(-0.05f * rb.velocity.y + 0.5f)
+			//slope = 1/(maxRange - minRange), slope-intercept = 0.5
 		);
+		//Mathf.Min(Mathf.Max(((rb.velocity.y * -0.08f) * 0.5f + 1.0f), 0.0f), 1.0f)
 
 		if (controller.walls.Count <= 0)
 		{
