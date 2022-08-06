@@ -27,11 +27,17 @@ public class PlayerStateGrounded : State
 
 	public override State RunCurrentState()
 	{
-		float coefficient = Mathf.Max(0.0f, 1.0f - 20.0f * Mathf.Abs(Mathf.Pow((Mathf.Abs(Vector3.Dot(Vector3.Normalize(Physics.gravity), AverageFloors(controller.floors))) - 1.0f), 4.0f)));
+		float coefficient;
+		Quaternion slopeRotation;
+
+		//Coefficient relating various parameters to the slope of the floor currently being stood on.
+		coefficient = Mathf.Max(0.0f, 1.0f - 18800.0f * Mathf.Abs(Mathf.Pow((Mathf.Abs(Vector3.Dot(Vector3.Normalize(Physics.gravity), AverageFloors(controller.floors))) - 1.0f), 8.0f)));
 		rb.drag = coefficient * 8.0f;
 
 		forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * controller.movementVector;
-		rb.AddForce(controller.speed * forceDir);
+		slopeRotation = Quaternion.FromToRotation(Vector3.up, AverageFloors(controller.floors));
+
+		rb.AddForce(coefficient * controller.speed * (slopeRotation * forceDir));
 
 		controller.animator.SetFloat(
 			"Grounded.Idle-Run", 
@@ -44,7 +50,7 @@ public class PlayerStateGrounded : State
 			float targetAngle = Mathf.Atan2(controller.movementVector.x, controller.movementVector.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
 			float angle = Mathf.SmoothDampAngle(graphics.rotation.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0.04f);
 			graphics.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
-			rb.drag = 8.0f;
+			//rb.drag = 8.0f;
 		}
 
 		if (rb.velocity.magnitude > 0.2f)
@@ -62,18 +68,20 @@ public class PlayerStateGrounded : State
 
 		if (CheckJumpConditions())
 		{
+			Debug.Log("Left grounded state because of jump.");
 			PlayerStateAerial nextState = new PlayerStateAerial();
 			controller.animator.SetInteger("PlayerState", 2);
 
 			controller.shortenJump = false;
 			controller.jumpCooldown = 0.04f + Utility.TIME_EPSILON;
 			controller.jumpAnticipate = 0.0f;
-			rb.AddForce(Vector3.up * Mathf.Sqrt(-2 * Physics.gravity.y * controller.jumpHeight), ForceMode.VelocityChange);
+			rb.AddForce(Vector3.up * coefficient * Mathf.Sqrt(-2 * Physics.gravity.y * controller.jumpHeight), ForceMode.VelocityChange);
 			nextState.Initialize(player);
 			return nextState;
 		}
 		if (CheckFallConditions())
 		{
+			Debug.Log("Left grounded state because of fall.");
 			PlayerStateAerial nextState = new PlayerStateAerial();
 			controller.animator.SetInteger("PlayerState", 2);
 
@@ -114,8 +122,8 @@ public class PlayerStateGrounded : State
 		Vector3 displacement;
 
 		//result = rb.SweepTest(Vector3.down, out controller.hit, 1.0f);
-		result = Physics.SphereCast(controller.transform.position, 0.5f, Vector3.down, out controller.hit, 1.2f);
-		displacement = (controller.hit.distance - 0.5f) * Vector3.down;
+		result = Physics.SphereCast(controller.transform.position, 0.45f, Vector3.down, out controller.hit, 1.25f);
+		displacement = (controller.hit.distance - 0.55f) * Vector3.down;
 
 		if (result)
 		{
