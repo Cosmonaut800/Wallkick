@@ -24,7 +24,7 @@ public class PlayerStateGrounded : State
 		cam = player.transform.Find("Main Camera");
 		rb.drag = 8.0f;
 		controller.touchedGround = true;
-		controller.animator.SetInteger("PlayerState", 1);
+		controller.animator.SetTrigger("PlayerState.Grounded");  // Animator
 	}
 
 	public override State RunCurrentState()
@@ -33,6 +33,12 @@ public class PlayerStateGrounded : State
 		Vector3 slope = AverageFloors(controller.floors);
 		Quaternion slopeRotation;
 		float slopeRatio;
+		
+		// Animator
+		controller.animator.SetFloat(
+			"Grounded.Idle-Run", 
+			Mathf.Min(1.0f, rb.velocity.magnitude * 0.1f)
+		);
 
 		//Coefficient relating various parameters to the slope of the floor currently being stood on.
 		coefficient = Mathf.Max(0.0f, 1.0f - 18800.0f * Mathf.Abs(Mathf.Pow((Mathf.Abs(Vector3.Dot(Vector3.down, AverageFloors(controller.floors))) - 1.0f), 8.0f)));
@@ -45,11 +51,6 @@ public class PlayerStateGrounded : State
 		if (slopeRatio > 0.01f) coefficient = 1.0f;
 		controller.debugString = fallTimer.ToString();
 		rb.AddForce(coefficient * controller.speed * (slopeRotation * forceDir));
-
-		controller.animator.SetFloat(
-			"Grounded.Idle-Run", 
-			Mathf.Min(1.0f, rb.velocity.magnitude * 0.1f)
-		);
 
 		float turnSmoothVelocity = 0.0f;
 		if (controller.movementVector.magnitude > 0.1f)
@@ -77,7 +78,6 @@ public class PlayerStateGrounded : State
 		{
 			Debug.Log("Left grounded state because of jump.");
 			PlayerStateAerial nextState = new PlayerStateAerial();
-			controller.animator.SetInteger("PlayerState", 2);
 
 			controller.shortenJump = false;
 			controller.jumpCooldown = 0.04f + Utility.TIME_EPSILON;
@@ -90,7 +90,6 @@ public class PlayerStateGrounded : State
 		{
 			Debug.Log("Left grounded state because of fall.");
 			PlayerStateAerial nextState = new PlayerStateAerial();
-			controller.animator.SetInteger("PlayerState", 2);
 
 			controller.touchedGround = false;
 			controller.shortenJump = true;
