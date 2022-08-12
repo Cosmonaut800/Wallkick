@@ -6,18 +6,20 @@ public class PlayerStateGrounded : State
 {
 	private GameObject player;
 	private Rigidbody rb;
-	private ThirdPersonPlayer controller; //Will be replaced with "PlayerController" class
+	private PlayerController controller; //Will be replaced with "PlayerController" class
 	private Transform graphics;
 	private Transform cam;
 	private bool jump;
 
 	private Vector3 forceDir;
 
+	private float fallTimer = 0.1f;
+
 	public override void Initialize(GameObject parent)
 	{
 		player = parent;
 		rb = player.GetComponent<Rigidbody>();
-		controller = player.GetComponent<ThirdPersonPlayer>();
+		controller = player.GetComponent<PlayerController>();
 		graphics = GameObject.Find("Player/Graphics").transform;
 		cam = player.transform.Find("Main Camera");
 		rb.drag = 8.0f;
@@ -28,15 +30,20 @@ public class PlayerStateGrounded : State
 	public override State RunCurrentState()
 	{
 		float coefficient;
+		Vector3 slope = AverageFloors(controller.floors);
 		Quaternion slopeRotation;
+		float slopeRatio;
 
 		//Coefficient relating various parameters to the slope of the floor currently being stood on.
-		coefficient = Mathf.Max(0.0f, 1.0f - 18800.0f * Mathf.Abs(Mathf.Pow((Mathf.Abs(Vector3.Dot(Vector3.Normalize(Physics.gravity), AverageFloors(controller.floors))) - 1.0f), 8.0f)));
+		coefficient = Mathf.Max(0.0f, 1.0f - 18800.0f * Mathf.Abs(Mathf.Pow((Mathf.Abs(Vector3.Dot(Vector3.down, AverageFloors(controller.floors))) - 1.0f), 8.0f)));
 		rb.drag = coefficient * 8.0f;
 
 		forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * controller.movementVector;
-		slopeRotation = Quaternion.FromToRotation(Vector3.up, AverageFloors(controller.floors));
+		slopeRotation = Quaternion.FromToRotation(Vector3.up, slope);
 
+		slopeRatio = Vector3.Dot(forceDir, slope);
+		if (slopeRatio > 0.01f) coefficient = 1.0f;
+		controller.debugString = fallTimer.ToString();
 		rb.AddForce(coefficient * controller.speed * (slopeRotation * forceDir));
 
 		controller.animator.SetFloat(
@@ -55,7 +62,7 @@ public class PlayerStateGrounded : State
 
 		if (rb.velocity.magnitude > 0.2f)
 		{
-			ApplyFriction(AverageFloors(controller.floors));
+			ApplyFriction(slope);
 		}
 		else
 		{
@@ -141,6 +148,8 @@ public class PlayerStateGrounded : State
 
 	private bool CheckFallConditions()
 	{
-		return controller.floors.Count <= 0;
+		if (controller.floors.Count <= 0) fallTimer -= Time.fixedDeltaTime;
+		else fallTimer = 0.1f;
+		return (controller.floors.Count <= 0 && fallTimer < 0.0f);
 	}
 }

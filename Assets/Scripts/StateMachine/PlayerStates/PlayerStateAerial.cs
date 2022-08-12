@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerStateAerial : State
 {
 	private GameObject player;
-	private ThirdPersonPlayer controller;
+	private PlayerController controller;
 	private Transform graphics;
 	private Transform cam;
 	private Rigidbody rb;
@@ -18,7 +18,7 @@ public class PlayerStateAerial : State
 	public override void Initialize(GameObject parent)
 	{
 		player = parent;
-		controller = player.GetComponent<ThirdPersonPlayer>();
+		controller = player.GetComponent<PlayerController>();
 		graphics = GameObject.Find("Player/Graphics").transform;
 		cam = player.transform.Find("Main Camera");
 		rb = controller.GetComponent<Rigidbody>();
