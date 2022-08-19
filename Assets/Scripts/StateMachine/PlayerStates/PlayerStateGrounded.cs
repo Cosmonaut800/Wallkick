@@ -11,9 +11,13 @@ public class PlayerStateGrounded : State
 	private Transform cam;
 	private bool jump;
 
+	private float angleDiff = 0.0f;
+
+	private float coefficient;
+
 	private Vector3 forceDir;
 
-	private float fallTimer = 0.1f;
+	private float coyoteTime = 0.1f;
 
 	public override void Initialize(GameObject parent)
 	{
@@ -25,26 +29,42 @@ public class PlayerStateGrounded : State
 		rb.drag = 8.0f;
 		controller.touchedGround = true;
 		controller.animator.SetInteger("PlayerState", 1);
+
+		ClampGround();
 	}
 
 	public override State RunCurrentState()
 	{
-		float coefficient;
 		Vector3 slope = AverageFloors(controller.floors);
 		Quaternion slopeRotation;
 		float slopeRatio;
 
-		//Coefficient relating various parameters to the slope of the floor currently being stood on.
-		coefficient = Mathf.Max(0.0f, 1.0f - 18800.0f * Mathf.Abs(Mathf.Pow((Mathf.Abs(Vector3.Dot(Vector3.down, AverageFloors(controller.floors))) - 1.0f), 8.0f)));
-		rb.drag = coefficient * 8.0f;
+		ClampGround();
 
 		forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * controller.movementVector;
 		slopeRotation = Quaternion.FromToRotation(Vector3.up, slope);
 
 		slopeRatio = Vector3.Dot(forceDir, slope);
-		if (slopeRatio > 0.01f) coefficient = 1.0f;
-		controller.debugString = fallTimer.ToString();
-		rb.AddForce(coefficient * controller.speed * (slopeRotation * forceDir));
+		//Coefficient relating various parameters to the slope of the floor currently being stood on.
+		//coefficient = Mathf.Max(0.0f, 1.0f - 18800.0f * Mathf.Abs(Mathf.Pow((Mathf.Abs(Vector3.Dot(Vector3.down, AverageFloors(controller.floors))) - 1.0f), 8.0f)));
+		if (Vector3.Dot(slope, Vector3.up) > 0.707f)
+		{
+			coefficient = 1.0f;
+			rb.AddForce(controller.speed * (slopeRotation * forceDir));
+		}
+		else
+		{
+			coefficient = 0.0f;
+			rb.AddForce(0.1f * controller.speed * (slopeRotation * forceDir));
+		}
+
+		if (controller.platform != null)
+		{
+			rb.AddForce(controller.platform.velocity, ForceMode.VelocityChange);
+			graphics.rotation = Quaternion.Euler(0.0f, graphics.rotation.eulerAngles.y + controller.platform.angularVelocity.y, 0.0f);
+		}
+
+		rb.drag = coefficient * 8.0f;
 
 		controller.animator.SetFloat(
 			"Grounded.Idle-Run", 
@@ -55,9 +75,8 @@ public class PlayerStateGrounded : State
 		if (controller.movementVector.magnitude > 0.1f)
 		{
 			float targetAngle = Mathf.Atan2(controller.movementVector.x, controller.movementVector.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
-			float angle = Mathf.SmoothDampAngle(graphics.rotation.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0.04f);
-			graphics.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
-			//rb.drag = 8.0f;
+			controller.angle = Mathf.SmoothDampAngle(graphics.rotation.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0.04f);
+			graphics.rotation = Quaternion.Euler(0.0f, controller.angle, 0.0f);
 		}
 
 		if (rb.velocity.magnitude > 0.2f)
@@ -68,10 +87,7 @@ public class PlayerStateGrounded : State
 		{
 			rb.AddForce(coefficient * -rb.velocity, ForceMode.VelocityChange);
 			rb.AddForce(coefficient * -Physics.gravity, ForceMode.Acceleration);
-			//Mathf.Lerp(1.0f, 0.0f, 1 - Mathf.Pow(Mathf.Abs(Vector3.Dot(AverageFloors(controller.floors), Vector3.Normalize(Physics.gravity))), 0.333f))
 		}
-
-		ClampGround();
 
 		if (CheckJumpConditions())
 		{
@@ -82,7 +98,7 @@ public class PlayerStateGrounded : State
 			controller.shortenJump = false;
 			controller.jumpCooldown = 0.04f + Utility.TIME_EPSILON;
 			controller.jumpAnticipate = 0.0f;
-			rb.AddForce(Vector3.up * coefficient * Mathf.Sqrt(-2 * Physics.gravity.y * controller.jumpHeight), ForceMode.VelocityChange);
+			rb.AddForce(Vector3.up * Mathf.Sqrt(-2 * Physics.gravity.y * controller.jumpHeight), ForceMode.VelocityChange);
 			nextState.Initialize(player);
 			return nextState;
 		}
@@ -129,8 +145,9 @@ public class PlayerStateGrounded : State
 		Vector3 displacement;
 
 		//result = rb.SweepTest(Vector3.down, out controller.hit, 1.0f);
-		result = Physics.SphereCast(controller.transform.position, 0.45f, Vector3.down, out controller.hit, 1.25f);
-		displacement = (controller.hit.distance - 0.55f) * Vector3.down;
+		result = Physics.SphereCast(controller.transform.position + (0.49f * Vector3.down), 0.50f, Vector3.down, out controller.hit, 0.20f);
+		controller.platform = controller.hit.rigidbody;
+		displacement = (controller.hit.distance - 0.01f) * Vector3.down;
 
 		if (result)
 		{
@@ -143,13 +160,20 @@ public class PlayerStateGrounded : State
 	//----State Transitions----------------
 	private bool CheckJumpConditions()
 	{
-		return controller.jumpCooldown < 0.0f && controller.jumpAnticipate > 0.0f;
+		return controller.jumpCooldown < 0.0f && controller.jumpAnticipate > 0.0f && coefficient > 0.5f;
 	}
 
 	private bool CheckFallConditions()
 	{
-		if (controller.floors.Count <= 0) fallTimer -= Time.fixedDeltaTime;
-		else fallTimer = 0.1f;
-		return (controller.floors.Count <= 0 && fallTimer < 0.0f);
+		if (controller.floors.Count > 0)
+		{
+			coyoteTime = 0.1f;
+			return false;
+		}
+		else
+		{
+			coyoteTime -= Time.fixedDeltaTime;
+			return coyoteTime < 0.0f;
+		}
 	}
 }

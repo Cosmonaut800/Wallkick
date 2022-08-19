@@ -19,8 +19,10 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public Animator animator;
 	
 	[HideInInspector] public Vector3 movementVector;
+	[HideInInspector] public float angle;
 	[HideInInspector] public float usedSpeed;
 	[HideInInspector] public RaycastHit hit;
+	[HideInInspector] public Rigidbody platform;
 
 	[HideInInspector] public float jumpAnticipate = -Utility.TIME_EPSILON;
 	[HideInInspector] public float jumpCooldown = 0.02f;
@@ -60,6 +62,8 @@ public class PlayerController : MonoBehaviour
 		lastWallsTouched = walls.Count;
 
 		physicsProcessed = false;
+
+		debugString = new Vector2(rb.velocity.x, rb.velocity.z).magnitude.ToString();
 	}
 
 	private void OnCollisionEnter(Collision collision)
