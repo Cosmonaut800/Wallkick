@@ -10,14 +10,13 @@ public class PlatformSpin : MonoBehaviour
 	public Rigidbody rb;
 
 	private float spinAngle = 0.0f;
-	private Vector3 startingPos;
+	private Vector3 startingPosition;
 
 	void Start()
 	{
-		startingPos = transform.position;
+		startingPosition = transform.position;
 	}
 
-	// Update is called once per frame
 	void FixedUpdate()
     {
 		float direction = 1.0f;
@@ -29,7 +28,7 @@ public class PlatformSpin : MonoBehaviour
 		}
 		spinAngle += direction * speed * Time.fixedDeltaTime;
 		rb.MoveRotation(rot);
-		rb.MovePosition(startingPos + pivot - (rot * pivot));
+		rb.MovePosition(startingPosition + pivot - (rot * pivot));
 
 		if (spinAngle > 360.0f) spinAngle -= 360.0f;
     }

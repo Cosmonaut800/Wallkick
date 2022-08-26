@@ -22,7 +22,9 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public float angle;
 	[HideInInspector] public float usedSpeed;
 	[HideInInspector] public RaycastHit hit;
+
 	[HideInInspector] public Rigidbody platform;
+	[HideInInspector] public Vector3 groundVelocity = Vector3.zero;
 
 	[HideInInspector] public float jumpAnticipate = -Utility.TIME_EPSILON;
 	[HideInInspector] public float jumpCooldown = 0.02f;
@@ -47,6 +49,11 @@ public class PlayerController : MonoBehaviour
 		animator = transform.Find("Graphics").GetComponent<Animator>();
 		usedSpeed = speed;
     }
+
+	private void Update()
+	{
+
+	}
 
 	// Update is called once per frame
 	private void FixedUpdate()
