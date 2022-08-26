@@ -73,14 +73,11 @@ public class PlayerStateGrounded : State
 
 		rb.drag = coefficient * 8.0f;
 
-<<<<<<< HEAD
-=======
 		controller.animator.SetFloat(
 			"Grounded.Idle-Run", 
 			Mathf.Min(1.0f, rb.velocity.magnitude * 0.1f) //This is the wrong way to handle this but I'll figure it out later
 		);
 
->>>>>>> main
 		float turnSmoothVelocity = 0.0f;
 		if (controller.movementVector.magnitude > 0.1f)
 		{
