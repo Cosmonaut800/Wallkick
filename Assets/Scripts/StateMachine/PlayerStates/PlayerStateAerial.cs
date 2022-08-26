@@ -13,6 +13,8 @@ public class PlayerStateAerial : State
 	private Vector3 lastVelocity;
 	private Vector3 lastLastVelocity;
 
+	private Vector2 lateralVelocity;
+
 	private static float WALLKICK_VELOCITY = 7.5f;
 
 	public override void Initialize(GameObject parent)
@@ -35,7 +37,15 @@ public class PlayerStateAerial : State
 		);
 
 		Vector3 forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * controller.movementVector;
-		rb.AddForce(0.1f * controller.speed * forceDir);
+		float coefficient = 1.0f;
+
+		lateralVelocity = new Vector2(rb.velocity.x, rb.velocity.z);
+		if (lateralVelocity.magnitude > 10.0f)
+		{
+			coefficient = 1.0f - ((Vector3.Dot(Vector3.Normalize(lateralVelocity), forceDir) + 1.0f) / 2.0f);
+		}
+
+		rb.AddForce(coefficient * 0.1f * controller.speed * forceDir);
 
 		if (controller.walls.Count <= 0)
 		{
