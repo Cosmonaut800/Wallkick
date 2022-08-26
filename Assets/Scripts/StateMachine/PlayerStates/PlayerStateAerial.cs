@@ -25,10 +25,17 @@ public class PlayerStateAerial : State
 		cam = player.transform.Find("Main Camera");
 		rb = controller.GetComponent<Rigidbody>();
 		rb.drag = 0.0f;
+		controller.animator.SetTrigger("PlayerState.Aerial");  // Animator
 	}
 
 	public override State RunCurrentState()
 	{
+		// Animator
+		controller.animator.SetFloat(
+			"Aerial.Jump",
+			Mathf.Clamp01(-0.05f * rb.velocity.y + 0.5f)
+		);
+
 		Vector3 forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * controller.movementVector;
 		float coefficient = 1.0f;
 
@@ -39,13 +46,6 @@ public class PlayerStateAerial : State
 		}
 
 		rb.AddForce(coefficient * 0.1f * controller.speed * forceDir);
-
-		controller.animator.SetFloat(
-			"Areal.Jump",
-			Mathf.Clamp01(-0.05f * rb.velocity.y + 0.5f)
-			//slope = 1/(maxRange - minRange), slope-intercept = 0.5
-		);
-		//Mathf.Min(Mathf.Max(((rb.velocity.y * -0.08f) * 0.5f + 1.0f), 0.0f), 1.0f)
 
 		if (controller.walls.Count <= 0)
 		{

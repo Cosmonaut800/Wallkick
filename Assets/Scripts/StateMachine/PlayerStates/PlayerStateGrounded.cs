@@ -26,7 +26,7 @@ public class PlayerStateGrounded : State
 		cam = player.transform.Find("Main Camera");
 		rb.drag = 8.0f;
 		controller.touchedGround = true;
-		controller.animator.SetInteger("PlayerState", 1);
+		controller.animator.SetTrigger("PlayerState.Grounded");  // Animator
 	}
 
 	public override State RunCurrentState()
@@ -34,6 +34,12 @@ public class PlayerStateGrounded : State
 		Vector3 slope = AverageFloors(controller.floors);
 		Quaternion slopeRotation;
 		float slopeRatio;
+		
+		// Animator
+		controller.animator.SetFloat(
+			"Grounded.Idle-Run", 
+			Mathf.Min(1.0f, rb.velocity.magnitude * 0.1f)
+		);
 
 		ClampGround();
 
@@ -93,7 +99,6 @@ public class PlayerStateGrounded : State
 		if (CheckJumpConditions())
 		{
 			PlayerStateAerial nextState = new PlayerStateAerial();
-			controller.animator.SetInteger("PlayerState", 2);
 
 			controller.shortenJump = false;
 			controller.jumpCooldown = 0.04f + Utility.TIME_EPSILON;
@@ -106,7 +111,6 @@ public class PlayerStateGrounded : State
 		if (CheckFallConditions())
 		{
 			PlayerStateAerial nextState = new PlayerStateAerial();
-			controller.animator.SetInteger("PlayerState", 2);
 
 			if (controller.platform != null) rb.AddForce(controller.platform.GetPointVelocity(controller.transform.position), ForceMode.VelocityChange);
 			controller.touchedGround = false;
