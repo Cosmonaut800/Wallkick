@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
 
 	public float maxFriction = 1.0f;
 
+	private PlayerInput playerInput;
+	private float controlTimeCorrection;
+
 	private Rigidbody rb;
 	[HideInInspector] public Animator animator;
 	
@@ -41,6 +44,9 @@ public class PlayerController : MonoBehaviour
 
 	private int lastWallsTouched = 0;
 	[HideInInspector] public float wallHitTimer = 0.0f;
+
+	[HideInInspector] public bool kick = false;
+	[HideInInspector] public int combo = 0;
 
 	// Start is called before the first frame update
 	private void Start()
@@ -108,6 +114,14 @@ public class PlayerController : MonoBehaviour
 		{
 			doJump = false;
 			shortenJump = true;
+		}
+	}
+
+	public void OnFire(InputAction.CallbackContext context)
+	{
+		if (context.performed)
+		{
+			kick = true;
 		}
 	}
 

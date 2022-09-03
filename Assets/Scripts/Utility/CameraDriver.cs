@@ -10,17 +10,18 @@ public class CameraDriver : MonoBehaviour
 	[Tooltip("Multiplier for gamepad input.")] public float yMultiplier = 1.0f;
 
 	private CinemachineVirtualCamera cam;
-	private Transform camPivot;
 	private CinemachinePOV camPOV;
-	[SerializeField] private PlayerInput player;
+	[SerializeField] private PlayerInput playerInput;
 
-	private Vector2 gizmoLook;
+	private float controlTimeCorrection = 1.0f;
 
     // Start is called before the first frame update
     void Start()
-    {
+	{
+		playerInput = GetComponent<PlayerInput>();
+		playerInput.controlsChangedEvent.AddListener(OnChangedControls);
+
 		cam = transform.Find("Camera Pivot/CM vcam1").GetComponent<CinemachineVirtualCamera>();
-		camPivot = transform.Find("Camera Pivot");
 		camPOV = cam.GetCinemachineComponent<CinemachinePOV>();
     }
 
@@ -29,20 +30,24 @@ public class CameraDriver : MonoBehaviour
 		//camPivot.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 	}
 
+	private void OnChangedControls(PlayerInput arg0) //Don't understand where this syntax comes from at all :D
+	{
+		if (playerInput.currentControlScheme == "Gamepad")
+		{
+			controlTimeCorrection = Time.deltaTime;
+		}
+		else
+		{
+			controlTimeCorrection = 1.0f;
+		}
+	}
+
 	public void OnLook(InputAction.CallbackContext context)
 	{
 		Vector2 inputLook = context.ReadValue<Vector2>();
-		gizmoLook = inputLook;
-		float xMult = 1.0f;
-		float yMult = 1.0f;
-
-		if (player.currentControlScheme == "Gamepad")
-		{
-			xMult = xMultiplier;
-			yMult = yMultiplier;
-		}
 		
-		camPOV.m_HorizontalAxis.m_InputAxisValue = inputLook.x * xMult;
-		camPOV.m_VerticalAxis.m_InputAxisValue = inputLook.y * yMult;
+		camPOV.m_HorizontalAxis.m_InputAxisValue = controlTimeCorrection * inputLook.x;
+		camPOV.m_VerticalAxis.m_InputAxisValue = controlTimeCorrection * inputLook.y;
+		Debug.Log(controlTimeCorrection);
 	}
 }

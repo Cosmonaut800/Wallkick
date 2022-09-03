@@ -6,6 +6,7 @@ public class PlatformSlide : MonoBehaviour
 {
 	public float speed = 1.0f;
 	public float distance = 0.0f;
+	public float phase = 0.0f;
 	public Vector3 direction = Vector3.forward;
 
 	private Rigidbody rb;
@@ -21,6 +22,6 @@ public class PlatformSlide : MonoBehaviour
 	void FixedUpdate()
     {
 		timer += Time.fixedDeltaTime;
-		rb.MovePosition(startingPosition + distance * Mathf.Sin(timer * speed) * direction);
+		rb.MovePosition(startingPosition + distance * Mathf.Sin(timer * speed + phase) * direction);
     }
 }

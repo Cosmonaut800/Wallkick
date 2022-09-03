@@ -96,6 +96,9 @@ public class PlayerStateGrounded : State
 			rb.AddForce(coefficient * -Physics.gravity, ForceMode.Acceleration);
 		}
 
+		controller.kick = false;
+		controller.combo = 0;
+
 		if (CheckJumpConditions())
 		{
 			PlayerStateAerial nextState = new PlayerStateAerial();

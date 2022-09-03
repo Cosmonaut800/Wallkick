@@ -73,6 +73,17 @@ public class PlayerStateAerial : State
 			controller.touchedGround = false;
 		}
 
+		if (controller.kick)
+		{
+			controller.kick = false;
+
+			if (controller.combo < 1)
+			{
+				controller.animator.SetTrigger("Kick");
+				controller.combo++;
+			}
+		}
+
 		if (controller.colliding > 0 && controller.jumpCooldown < 0.0f)
 		{
 			//Touching the floor -> Grounded
