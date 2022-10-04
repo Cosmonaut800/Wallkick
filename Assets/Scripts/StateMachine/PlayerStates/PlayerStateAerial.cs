@@ -13,7 +13,7 @@ public class PlayerStateAerial : State
 	private Vector3 lastVelocity;
 	private Vector3 lastLastVelocity;
 
-	private Vector2 lateralVelocity;
+	private Vector3 lateralVelocity;
 
 	private static float WALLKICK_VELOCITY = 7.5f;
 
@@ -21,7 +21,7 @@ public class PlayerStateAerial : State
 	{
 		player = parent;
 		controller = player.GetComponent<PlayerController>();
-		graphics = GameObject.Find("Player/Graphics").transform;
+		graphics = player.transform.Find("Graphics");
 		cam = player.transform.Find("Main Camera");
 		rb = controller.GetComponent<Rigidbody>();
 		rb.drag = 0.0f;
@@ -39,20 +39,17 @@ public class PlayerStateAerial : State
 		Vector3 forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * controller.movementVector;
 		float coefficient = 1.0f;
 
-		lateralVelocity = new Vector2(rb.velocity.x, rb.velocity.z);
+		//Limit moving force when travelling above speed limit
+		lateralVelocity = new Vector3(rb.velocity.x, 0.0f, rb.velocity.z);
 		if (lateralVelocity.magnitude > 10.0f)
 		{
-			coefficient = 1.0f - ((Vector3.Dot(Vector3.Normalize(lateralVelocity), forceDir) + 1.0f) / 2.0f);
+			coefficient = 1.0f - ((Vector3.Dot(lateralVelocity.normalized, forceDir) + 1.0f) / 2.0f);
 		}
 
+		//Moving force
 		rb.AddForce(coefficient * 0.1f * controller.speed * forceDir);
 
-		if (controller.walls.Count <= 0)
-		{
-			lastLastVelocity = lastVelocity; //For some reason one frame of velocity is recorded after colliding with the wall, so we need the velocity from 2 frames ago.
-			lastVelocity = rb.velocity;
-		}
-
+		//Shorten jump when the jump button is released
 		if (controller.doJump && controller.touchedGround)
 		{
 			if (controller.prolongJump > 0.0f)
@@ -73,6 +70,14 @@ public class PlayerStateAerial : State
 			controller.touchedGround = false;
 		}
 
+		//Get last airspeed before colliding with a wall, for walljumps
+		if (controller.walls.Count <= 0)
+		{
+			lastLastVelocity = lastVelocity; //For some reason one frame of velocity is recorded after colliding with the wall, so we need the velocity from 2 frames ago.
+			lastVelocity = rb.velocity;
+		}
+
+		//Perform substate action
 		if (controller.kick)
 		{
 			controller.kick = false;

@@ -10,6 +10,8 @@ public class TargetFPS : MonoBehaviour
 	[SerializeField] private int framerate = 60;
 	[SerializeField] private int vSyncCount = 1;
 
+	private int lastFrameRate = 60;
+
 	private void Start()
 	{
 		if (vSync)
@@ -22,5 +24,16 @@ public class TargetFPS : MonoBehaviour
 		}
 
 		Cursor.lockState = CursorLockMode.Locked;
+
+		lastFrameRate = framerate;
+	}
+
+	private void Update()
+	{
+		if (framerate != lastFrameRate)
+		{
+			Application.targetFrameRate = framerate;
+			lastFrameRate = framerate;
+		}
 	}
 }

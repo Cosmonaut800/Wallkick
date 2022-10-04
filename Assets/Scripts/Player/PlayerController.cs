@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
 {
 	public string debugString;
 
+	public float health = 100.0f;
+
 	public float speed = 1.0f;
 	public float jumpHeight = 1.0f;
 
@@ -27,7 +29,6 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public RaycastHit hit;
 
 	[HideInInspector] public Rigidbody platform;
-	[HideInInspector] public Vector3 groundVelocity = Vector3.zero;
 
 	[HideInInspector] public float jumpAnticipate = -Utility.TIME_EPSILON;
 	[HideInInspector] public float jumpCooldown = 0.02f;
@@ -48,12 +49,15 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public bool kick = false;
 	[HideInInspector] public int combo = 0;
 
+	private Transform cam;
+
 	// Start is called before the first frame update
 	private void Start()
     {
 		rb = GetComponent<Rigidbody>();
 		animator = transform.Find("Graphics").GetComponent<Animator>();
 		usedSpeed = speed;
+		cam = transform.Find("Main Camera");
     }
 
 	private void Update()
@@ -76,7 +80,9 @@ public class PlayerController : MonoBehaviour
 
 		physicsProcessed = false;
 
-		debugString = new Vector2(rb.velocity.x, rb.velocity.z).magnitude.ToString();
+		//debugString = new Vector2(rb.velocity.x, rb.velocity.z).magnitude.ToString();
+		Vector3 forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * movementVector;
+		Vector3 lateralVelocity = new Vector3(rb.velocity.x, 0.0f, rb.velocity.z);
 	}
 
 	private void OnCollisionEnter(Collision collision)

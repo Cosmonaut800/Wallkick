@@ -2,17 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SubState : MonoBehaviour
+public abstract class SubState
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public abstract SubState RunCurrentSubState();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	public abstract void Initialize(GameObject parent);
 }

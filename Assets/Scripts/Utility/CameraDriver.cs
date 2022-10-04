@@ -48,6 +48,5 @@ public class CameraDriver : MonoBehaviour
 		
 		camPOV.m_HorizontalAxis.m_InputAxisValue = controlTimeCorrection * inputLook.x;
 		camPOV.m_VerticalAxis.m_InputAxisValue = controlTimeCorrection * inputLook.y;
-		Debug.Log(controlTimeCorrection);
 	}
 }

@@ -8,14 +8,12 @@ public class PlayerStateGrounded : State
 	private Rigidbody rb;
 	private PlayerController controller; //Will be replaced with "PlayerController" class
 	private Transform graphics;
-	private Transform cam;
-	private bool jump;
 
 	private float coefficient;
 
-	private Vector3 forceDir;
-
 	private float coyoteTime = 0.1f;
+
+	private SubState currentSubState;
 
 	public override void Initialize(GameObject parent)
 	{
@@ -23,17 +21,16 @@ public class PlayerStateGrounded : State
 		rb = player.GetComponent<Rigidbody>();
 		controller = player.GetComponent<PlayerController>();
 		graphics = GameObject.Find("Player/Graphics").transform;
-		cam = player.transform.Find("Main Camera");
 		rb.drag = 8.0f;
 		controller.touchedGround = true;
 		controller.animator.SetTrigger("PlayerState.Grounded");  // Animator
+		currentSubState = new P_SubStateGroundedIdle();
+		currentSubState.Initialize(parent);
 	}
 
 	public override State RunCurrentState()
 	{
 		Vector3 slope = AverageFloors(controller.floors);
-		Quaternion slopeRotation;
-		float slopeRatio;
 		
 		// Animator
 		controller.animator.SetFloat(
@@ -45,47 +42,20 @@ public class PlayerStateGrounded : State
 
 		if (controller.platform != null)
 		{
-			controller.groundVelocity = controller.platform.GetPointVelocity(controller.transform.position + Vector3.down);
 			rb.MovePosition(controller.transform.position + controller.platform.GetPointVelocity(controller.transform.position + Vector3.down) * Time.fixedDeltaTime);
 			graphics.rotation = Quaternion.Euler(0.0f, graphics.rotation.eulerAngles.y + controller.platform.angularVelocity.y, 0.0f);
 		}
-		else
-		{
-			controller.groundVelocity = Vector3.zero;
-		}
 
-		forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * controller.movementVector;
-		slopeRotation = Quaternion.FromToRotation(Vector3.up, slope);
+		RunSubState();
 
-		slopeRatio = Vector3.Dot(forceDir, slope);
-		//Coefficient relating various parameters to the slope of the floor currently being stood on.
-		//coefficient = Mathf.Max(0.0f, 1.0f - 18800.0f * Mathf.Abs(Mathf.Pow((Mathf.Abs(Vector3.Dot(Vector3.down, AverageFloors(controller.floors))) - 1.0f), 8.0f)));
 		if (Vector3.Dot(slope, Vector3.up) > 0.707f)
 		{
 			coefficient = 1.0f;
-			rb.AddForce(controller.speed * (slopeRotation * forceDir));
 		}
 		else
 		{
 			coefficient = 0.0f;
-			rb.AddForce(0.1f * controller.speed * (slopeRotation * forceDir));
 		}
-
-		rb.drag = coefficient * 8.0f;
-
-		controller.animator.SetFloat(
-			"Grounded.Idle-Run", 
-			Mathf.Min(1.0f, rb.velocity.magnitude * 0.1f) //This is the wrong way to handle this but I'll figure it out later
-		);
-
-		float turnSmoothVelocity = 0.0f;
-		if (controller.movementVector.magnitude > 0.1f)
-		{
-			float targetAngle = Mathf.Atan2(controller.movementVector.x, controller.movementVector.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
-			controller.angle = Mathf.SmoothDampAngle(graphics.rotation.eulerAngles.y, targetAngle, ref turnSmoothVelocity, 0.04f);
-			graphics.rotation = Quaternion.Euler(0.0f, controller.angle, 0.0f);
-		}
-
 		if (rb.velocity.magnitude > 0.2f)
 		{
 			ApplyFriction(slope);
@@ -127,13 +97,18 @@ public class PlayerStateGrounded : State
 		}
 	}
 
+	private void RunSubState()
+	{
+		currentSubState = currentSubState.RunCurrentSubState();
+	}
+
 	private Vector3 AverageFloors(List<ContactPoint> floors)
 	{
 		Vector3 result = Vector3.zero;
 
 		for (int i = 0; i < floors.Count; i++)
 		{
-			result = result + floors[i].normal;
+			result += floors[i].normal;
 		}
 
 		result = Vector3.Normalize(result);

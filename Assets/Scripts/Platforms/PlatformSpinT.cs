@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlatformSpin : MonoBehaviour
+public class PlatformSpinT : MonoBehaviour
 {
 	public Vector3 pivot = Vector3.zero;
 	public bool clockwise = true;
@@ -17,8 +17,8 @@ public class PlatformSpin : MonoBehaviour
 		startingPosition = transform.position;
 	}
 
-	void FixedUpdate()
-    {
+	void Update()
+	{
 		float direction = 1.0f;
 		Quaternion rot = Quaternion.Euler(0.0f, spinAngle, 0.0f);
 
@@ -26,12 +26,12 @@ public class PlatformSpin : MonoBehaviour
 		{
 			direction = -1.0f;
 		}
-		spinAngle += direction * speed * Time.fixedDeltaTime;
-		rb.MoveRotation(rot);
-		rb.MovePosition(startingPosition + pivot - (rot * pivot));
+		spinAngle += direction * speed * Time.deltaTime;
+		transform.rotation = Quaternion.Euler(0.0f, spinAngle, 0.0f);
+		transform.position = startingPosition + pivot - (rot * pivot);
 
 		if (spinAngle > 360.0f) spinAngle -= 360.0f;
-    }
+	}
 
 	private void OnDrawGizmos()
 	{
