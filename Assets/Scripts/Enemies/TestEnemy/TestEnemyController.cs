@@ -6,12 +6,10 @@ public class TestEnemyController : BaseEnemyController
 {
 	public Transform target;
 
-	void SpawnHurtbox(Vector3 position, float radius)
+	void Start()
 	{
-		SphereCollider hurtbox = new SphereCollider();
-		hurtbox.center = position;
-		hurtbox.radius = radius;
-
-		hurtboxes.Add(hurtbox);
+		rb = GetComponent<Rigidbody>();
+		currentState = new TestEnemyDefaultState();
+		currentState.Initialize(gameObject);
 	}
 }

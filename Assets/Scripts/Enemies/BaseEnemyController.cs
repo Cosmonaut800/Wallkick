@@ -8,18 +8,17 @@ public class BaseEnemyController : MonoBehaviour
 	[HideInInspector] public Rigidbody rb;
 	public float speed = 10.0f;
 	[HideInInspector] public List<Collider> hurtboxes = new List<Collider>();
+	public Hurtbox hurtbox;
 
-	private State currentState;
+	protected State currentState;
 
 	void Start()
 	{
 		rb = GetComponent<Rigidbody>();
-		currentState = new TestEnemyDefaultState();
-		currentState.Initialize(gameObject);
 	}
 
 	void FixedUpdate()
 	{
-		currentState = currentState.RunCurrentState();
+		currentState = currentState?.RunCurrentState();
 	}
 }

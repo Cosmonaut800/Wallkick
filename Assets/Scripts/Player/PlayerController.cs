@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
 	public string debugString;
 
 	public float health = 100.0f;
+	public Image healthBar;
 
 	public float speed = 1.0f;
 	public float jumpHeight = 1.0f;
@@ -62,7 +64,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-
+		healthBar.fillAmount = health / 200.0f;
 	}
 
 	// Update is called once per frame
@@ -79,6 +81,10 @@ public class PlayerController : MonoBehaviour
 		lastWallsTouched = walls.Count;
 
 		physicsProcessed = false;
+
+		health += 5.0f * Time.fixedDeltaTime;
+		if (health > 100.0f) health = 100.0f;
+		else if (health < 0.0f) health = 0.0f;
 
 		//debugString = new Vector2(rb.velocity.x, rb.velocity.z).magnitude.ToString();
 		Vector3 forceDir = Quaternion.Euler(0.0f, cam.rotation.eulerAngles.y, 0.0f) * movementVector;
