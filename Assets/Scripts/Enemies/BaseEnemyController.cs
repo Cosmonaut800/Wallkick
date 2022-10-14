@@ -21,4 +21,9 @@ public class BaseEnemyController : MonoBehaviour
 	{
 		currentState = currentState?.RunCurrentState();
 	}
+
+	public void Damage(float damage)
+	{
+		health -= damage;
+	}
 }

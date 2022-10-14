@@ -25,14 +25,6 @@ public class Hurtbox : MonoBehaviour
 		}
 	}
 
-	private void OnTriggerEnter(Collider other)
-	{
-		if (other.gameObject.layer == 6) //Layer 6 == Player
-		{
-			other.gameObject.GetComponent<PlayerController>().health -= 10.0f;
-		}
-	}
-
 	public void Activate(float duration)
 	{
 		hurtbox.enabled = true;

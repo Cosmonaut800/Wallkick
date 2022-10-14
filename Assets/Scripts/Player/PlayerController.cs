@@ -173,6 +173,11 @@ public class PlayerController : MonoBehaviour
 		walls.Clear();
 	}
 
+	public void Damage(float damage)
+	{
+		health -= damage;
+	}
+
 	private void OnDrawGizmos()
 	{
 		for (int i = 0; i < floors.Count; i++)
