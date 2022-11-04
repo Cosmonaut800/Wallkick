@@ -25,6 +25,8 @@ public class PlayerStateAerial : State
 		cam = player.transform.Find("Main Camera");
 		rb = controller.GetComponent<Rigidbody>();
 		rb.drag = 0.0f;
+		controller.animator.ResetTrigger("PlayerState.Grounded");
+		controller.animator.ResetTrigger("Attack");
 		controller.animator.SetTrigger("PlayerState.Aerial");  // Animator
 	}
 
@@ -78,13 +80,13 @@ public class PlayerStateAerial : State
 		}
 
 		//Perform substate action
-		if (controller.kick)
+		if (controller.attack)
 		{
-			controller.kick = false;
+			controller.attack = false;
 
 			if (controller.combo < 1)
 			{
-				controller.animator.SetTrigger("Kick");
+				controller.animator.SetTrigger("Attack");
 				controller.combo++;
 			}
 		}

@@ -4,13 +4,28 @@ using UnityEngine;
 
 public class P_SubStateGroundedAttack1 : SubState
 {
-	public override void Initialize(GameObject parent)
+	/*
+	 * Make so the substate does not exit until current attacking animation finishes
+	 */
+
+	private GameObject player;
+	private PlayerController controller;
+
+	public override void Initialize(GameObject parent, State newParentState)
 	{
-		throw new System.NotImplementedException();
+		player = parent;
+		parentState = newParentState;
+		controller = player.GetComponent<PlayerController>();
+		controller.animator.SetTrigger("Attack");
 	}
 
 	public override SubState RunCurrentSubState()
 	{
-		throw new System.NotImplementedException();
+		P_SubStateGroundedIdle nextSubState = new P_SubStateGroundedIdle();
+		nextSubState.Initialize(player, parentState);
+
+		Debug.Log("Attack executed");
+
+		return nextSubState;
 	}
 }

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public abstract class SubState
 {
+	protected State parentState;
+
 	public abstract SubState RunCurrentSubState();
 
-	public abstract void Initialize(GameObject parent);
+	public abstract void Initialize(GameObject parent, State newParentState);
 }

@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
 	private int lastWallsTouched = 0;
 	[HideInInspector] public float wallHitTimer = 0.0f;
 
-	[HideInInspector] public bool kick = false;
+	[HideInInspector] public bool attack = false;
 	[HideInInspector] public int combo = 0;
 
 	private Transform cam;
@@ -133,7 +133,8 @@ public class PlayerController : MonoBehaviour
 	{
 		if (context.performed)
 		{
-			kick = true;
+			Debug.Log("Attack activated");
+			attack = true;
 		}
 	}
 

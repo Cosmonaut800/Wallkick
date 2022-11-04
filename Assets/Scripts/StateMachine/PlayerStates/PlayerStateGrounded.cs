@@ -6,7 +6,7 @@ public class PlayerStateGrounded : State
 {
 	private GameObject player;
 	private Rigidbody rb;
-	private PlayerController controller; //Will be replaced with "PlayerController" class
+	private PlayerController controller;
 	private Transform graphics;
 
 	private float coefficient;
@@ -18,6 +18,7 @@ public class PlayerStateGrounded : State
 	public override void Initialize(GameObject parent)
 	{
 		player = parent;
+		nextState = this;
 		rb = player.GetComponent<Rigidbody>();
 		controller = player.GetComponent<PlayerController>();
 		graphics = GameObject.Find("Player/Graphics").transform;
@@ -25,7 +26,7 @@ public class PlayerStateGrounded : State
 		controller.touchedGround = true;
 		controller.animator.SetTrigger("PlayerState.Grounded");  // Animator
 		currentSubState = new P_SubStateGroundedIdle();
-		currentSubState.Initialize(parent);
+		currentSubState.Initialize(parent, this);
 	}
 
 	public override State RunCurrentState()
@@ -46,8 +47,6 @@ public class PlayerStateGrounded : State
 			graphics.rotation = Quaternion.Euler(0.0f, graphics.rotation.eulerAngles.y + controller.platform.angularVelocity.y, 0.0f);
 		}
 
-		RunSubState();
-
 		if (Vector3.Dot(slope, Vector3.up) > 0.707f)
 		{
 			coefficient = 1.0f;
@@ -66,40 +65,29 @@ public class PlayerStateGrounded : State
 			rb.AddForce(coefficient * -Physics.gravity, ForceMode.Acceleration);
 		}
 
-		controller.kick = false;
-		controller.combo = 0;
-
-		if (CheckJumpConditions())
-		{
-			PlayerStateAerial nextState = new PlayerStateAerial();
-
-			controller.shortenJump = false;
-			controller.jumpCooldown = 0.04f + Utility.TIME_EPSILON;
-			controller.jumpAnticipate = 0.0f;
-			rb.AddForce(Vector3.up * Mathf.Sqrt(-2 * Physics.gravity.y * controller.jumpHeight), ForceMode.VelocityChange);
-			if (controller.platform != null) rb.AddForce(controller.platform.GetPointVelocity(controller.transform.position), ForceMode.VelocityChange);
-			nextState.Initialize(player);
-			return nextState;
-		}
 		if (CheckFallConditions())
 		{
-			PlayerStateAerial nextState = new PlayerStateAerial();
+			nextState = new PlayerStateAerial();
 
 			if (controller.platform != null) rb.AddForce(controller.platform.GetPointVelocity(controller.transform.position), ForceMode.VelocityChange);
 			controller.touchedGround = false;
 			controller.shortenJump = true;
 			nextState.Initialize(player);
-			return nextState;
 		}
 		else
 		{
-			return this;
+			nextState = this;
 		}
+
+		RunSubState();
+
+		return nextState;
 	}
 
 	private void RunSubState()
 	{
 		currentSubState = currentSubState.RunCurrentSubState();
+		Debug.Log(currentSubState.ToString());
 	}
 
 	private Vector3 AverageFloors(List<ContactPoint> floors)

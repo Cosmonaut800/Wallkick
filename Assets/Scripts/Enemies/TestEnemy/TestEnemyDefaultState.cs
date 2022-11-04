@@ -11,7 +11,7 @@ public class TestEnemyDefaultState : State
 	{
 		controller = parent.GetComponent<TestEnemyController>();
 		rb = controller?.rb;
-		controller.hurtbox.SetRadius(2.0f);
+		controller.hurtbox.SetRadius(3.0f);
 	}
 
 	public override State RunCurrentState()

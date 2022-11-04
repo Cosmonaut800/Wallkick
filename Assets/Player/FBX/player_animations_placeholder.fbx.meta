@@ -1,0 +1,171 @@
+fileFormatVersion: 2
+guid: 8ea01696c19365e42b56219d24c8d79d
+ModelImporter:
+  serializedVersion: 20200
+  internalIDToNameTable:
+  - first:
+      74: 6121895296435977923
+    second: Default
+  - first:
+      74: 1683984789912424686
+    second: Aerial.Idle
+  - first:
+      74: -707168185373101004
+    second: Aerial.Idle.Export
+  - first:
+      74: 1113995223560919567
+    second: Aerial.Jump
+  - first:
+      74: 695734228305196677
+    second: Aerial.Jump.Export
+  - first:
+      74: 2797494910379417643
+    second: Aerial.Kick
+  - first:
+      74: -6264993932308063461
+    second: Aerial.Kick.Export
+  - first:
+      74: 3190837809894941093
+    second: Grounded.Dash.Enter
+  - first:
+      74: -5128867775110183036
+    second: Grounded.Dash.Exit
+  - first:
+      74: 4316002225946753625
+    second: Grounded.Idle
+  - first:
+      74: -5611581446878050234
+    second: Grounded.Idle.Export
+  - first:
+      74: 2636245499392861380
+    second: Grounded.Kick.1
+  - first:
+      74: -2117344394759364585
+    second: Grounded.Punch.1
+  - first:
+      74: 3732561584484796453
+    second: Grounded.Punch.2
+  - first:
+      74: -3533918853289594326
+    second: Grounded.Run
+  - first:
+      74: 6228380124240345501
+    second: Grounded.Run.Export
+  - first:
+      74: 1961231047015376521
+    second: Armature|Aerial.Idle
+  - first:
+      74: 1966438391650284864
+    second: Armature|Aerial.Idle.Export
+  - first:
+      74: 1874949109709120418
+    second: Armature|Aerial.Jump
+  - first:
+      74: 2665610607553450431
+    second: Armature|Aerial.Jump.Export
+  - first:
+      74: -8048229669371423922
+    second: Armature|Aerial.Kick
+  - first:
+      74: -4056639472247043121
+    second: Armature|Aerial.Kick.Export
+  - first:
+      74: -8018827788065400029
+    second: Armature|Grounded.Dash.Exit
+  externalObjects: {}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
