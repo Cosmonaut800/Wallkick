@@ -73,7 +73,6 @@ public class P_SubStateGroundedIdle : SubState
 			P_SubStateGroundedAttack1 nextSubState = new P_SubStateGroundedAttack1();
 			nextSubState.Initialize(player, parentState);
 
-			Debug.Log("Attack received");
 			controller.attack = false;
 
 			return nextSubState;

@@ -87,7 +87,7 @@ public class PlayerStateAerial : State
 			if (controller.combo < 1)
 			{
 				controller.animator.SetTrigger("Attack");
-				controller.combo++;
+				//controller.combo++;
 			}
 		}
 

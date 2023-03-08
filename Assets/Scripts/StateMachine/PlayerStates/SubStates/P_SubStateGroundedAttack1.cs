@@ -10,6 +10,8 @@ public class P_SubStateGroundedAttack1 : SubState
 
 	private GameObject player;
 	private PlayerController controller;
+	//private bool exitedIdleRun = false;
+	private int transitionCount = 0;
 
 	public override void Initialize(GameObject parent, State newParentState)
 	{
@@ -21,11 +23,19 @@ public class P_SubStateGroundedAttack1 : SubState
 
 	public override SubState RunCurrentSubState()
 	{
-		P_SubStateGroundedIdle nextSubState = new P_SubStateGroundedIdle();
-		nextSubState.Initialize(player, parentState);
+		if (controller.animator.IsInTransition(0))
+		{
+			transitionCount++;
+		}
 
-		Debug.Log("Attack executed");
+		if (transitionCount > 0 && controller.animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f)
+		{
+			P_SubStateGroundedIdle nextSubState = new P_SubStateGroundedIdle();
+			nextSubState.Initialize(player, parentState);
+			Debug.Log("Attack exit");
+			return nextSubState;
+		}
 
-		return nextSubState;
+		return this;
 	}
 }

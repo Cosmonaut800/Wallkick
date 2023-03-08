@@ -87,7 +87,6 @@ public class PlayerStateGrounded : State
 	private void RunSubState()
 	{
 		currentSubState = currentSubState.RunCurrentSubState();
-		Debug.Log(currentSubState.ToString());
 	}
 
 	private Vector3 AverageFloors(List<ContactPoint> floors)

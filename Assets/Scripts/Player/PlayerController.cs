@@ -133,7 +133,6 @@ public class PlayerController : MonoBehaviour
 	{
 		if (context.performed)
 		{
-			Debug.Log("Attack activated");
 			attack = true;
 		}
 	}
